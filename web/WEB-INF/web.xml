@@ -36,6 +36,10 @@
         <servlet-name>raw_report</servlet-name>
         <servlet-class>Reports.raw_report</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>load_elements</servlet-name>
+        <servlet-class>Loaders.load_elements</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>dbsetup</servlet-name>
         <url-pattern>/dbsetup</url-pattern>
@@ -71,6 +75,10 @@
     <servlet-mapping>
         <servlet-name>raw_report</servlet-name>
         <url-pattern>/raw_report</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>load_elements</servlet-name>
+        <url-pattern>/load_elements</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -3,7 +3,6 @@
     Created on : May 8, 2018, 12:11:56 PM
     Author     : GNyabuto
 --%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -56,11 +55,17 @@
                       <div class="card-header">
                         <strong>Raw Data Generation Module</strong>
                       </div>
-                      <form action="raw_data">
-                          <form action="upload_excels" method="post" enctype="multipart/form-data" class="form-horizontal">
+                          <form action="raw_report" method="post" class="form-horizontal">
                          <div class="card-body card-block"> 
+                          <div class="row form-group"  style="text-align: center;">
+                              <label for="file-multiple-input" class=" form-control-label" style="text-align: center;">
+                                  <b style="color:red">Note:</b> 
+                            If no option is selected in a field, all data as per that field will be fetched.
+                            </label>
+                            
+                          </div>
                           <div class="row form-group">
-                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label">Select County</label></div>
+                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label"><b>Select County</b> [Optional]</label></div>
                             <div class="col-12 col-md-6">
                                 
                                 <select id="county" name="county"  data-placeholder="Choose counties..." multiple class="standardSelect form-control">
@@ -69,7 +74,7 @@
                             </div>
                           </div>
                           <div class="row form-group">
-                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label">Select Sub County</label></div>
+                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label"><b>Select Sub County</b> [Optional]</label></div>
                             <div class="col-12 col-md-6">
                                 
                                 <select id="sub_county" name="sub_county"  data-placeholder="Choose sub counties..." multiple class="standardSelect form-control">
@@ -78,10 +83,19 @@
                             </div>
                           </div>
                           <div class="row form-group">
-                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label">Select Health Facility</label></div>
+                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label"><b>Select Health Facility</b> [Optional]</label></div>
                             <div class="col-12 col-md-6">
                                 
                                 <select id="mfl_code" name="mfl_code" data-placeholder="Choose health facilities..." multiple class="standardSelect form-control" style="height: 200px;">
+                                    <option value =""> Choose Health Facilities</option>
+                                    </select>
+                            </div>
+                          </div>
+                          <div class="row form-group">
+                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label"><b>Select Elements</b> [Optional]</label></div>
+                            <div class="col-12 col-md-6">
+                                
+                                <select id="elements" name="elements" data-placeholder="Choose elements..." multiple class="standardSelect form-control" style="height: 200px;">
                                     <option value =""> Choose Health Facilities</option>
                                     </select>
                             </div>
@@ -94,11 +108,9 @@
                           <i class="fa fa-dot-circle-o"></i> Generate Report
                         </button>
                       </div>
-                            </form> 
                           </form>
                     </div>
                   </div>
-
 
                 </div>
 
@@ -129,17 +141,45 @@
     </script>
 <script>
    jQuery(document).ready(function() {
+      load_elements();
       load_counties();
       load_sub_counties();
       load_facilities();
       
       jQuery("#county").change(function(){
-      load_sub_counties();    
+      load_sub_counties(); 
+      load_facilities();
       });
       jQuery("#sub_county").change(function(){
       load_facilities();    
       });
    }); 
+ function load_elements(){
+       jQuery.ajax({
+        url:'load_elements',
+        type:"post",
+        dataType:"json",
+        success:function(raw_data){
+         var column_name,label,output="";
+         var data = raw_data.data;
+          column_name=label="";
+             for (var i=0; i<data.length;i++){
+            if( data[i].column_name!=null){column_name = data[i].column_name;}
+            if( data[i].label!=null){label = data[i].label;}
+            output+="<option value='"+column_name+"'>"+label+"</option>"; 
+         }
+         // ouput
+         jQuery("#elements").html(output);
+         jQuery("#elements").chosen("destroy");
+         jQuery("#elements").chosen({
+                disable_search_threshold: 10,
+                no_results_text: "Oops, no county found!",
+                width: "100%"
+            });
+        }
+  });   
+        
+ }   
  function load_counties(){
        jQuery.ajax({
         url:'load_county',
@@ -168,8 +208,9 @@
  function load_sub_counties(){
      
      var county = jQuery("#county").val();
-     if(county==null){county="";}
      
+     if(county==null){county="";}
+     else{county = county.toString();}
      var form_data = {"county":county};
                 var url = "load_subcounty";
                    jQuery.post(url,form_data , function(raw_data) {
@@ -194,11 +235,12 @@
         
  }   
  function load_facilities(){
-     alert("called");
      var county = jQuery("#county").val();
      var sub_county = jQuery("#sub_county").val();
      if(county==null){county=""}
+     else{county = county.toString();}
      if(sub_county==null){sub_county=""}
+     else{sub_county = sub_county.toString();}
       
      var form_data = {"county":county,"sub_county":sub_county};
                 var url = "load_facilities";

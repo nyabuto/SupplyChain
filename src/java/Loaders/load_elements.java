@@ -6,7 +6,6 @@
 package Loaders;
 
 import Db.dbConn;
-import SupplyChain.Manager;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -24,51 +23,27 @@ import org.json.simple.JSONObject;
  *
  * @author GNyabuto
  */
-public class load_subcounty extends HttpServlet {
-HttpSession session;
-String sub_county;
-String query;
-String where_clause;
+public class load_elements extends HttpServlet {
+    HttpSession session;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        response.setContentType("Content-type: application/json");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
            session = request.getSession();
            dbConn conn = new dbConn();
-           
-          
-          
-         where_clause = "WHERE 1=1 AND"; 
-          
-         if(request.getParameter("county")!=null && !request.getParameter("county").equals("")){
-           String[] counties = request.getParameter("county").split(",");  
-          for(String county:counties){
-              if(!county.equals("") && !county.equals(",")){
-              county = county.replace("'", "\'");
-              where_clause+=" county='"+county+"' OR ";
-              }
-          }
-          }
-          
-          //remove last 4 characters
-          where_clause = Manager.removeLastChars(where_clause, 3);
-           
-           
-           
-           
             JSONObject finalobj = new JSONObject();
             JSONArray jarray = new JSONArray();
-            query = "";
             
-              query = "SELECT DISTINCT(sub_county) AS sub_county FROM report "+where_clause+" ORDER BY sub_county";
-              conn.pst = conn.conn.prepareStatement(query);
-              conn.rs = conn.pst.executeQuery();  
             
-            System.out.println("query : "+conn.pst);
+            String getcolumns = "SELECT column_name,label FROM column_mapping WHERE is_active=1 ORDER BY id";
+            conn.rs = conn.st.executeQuery(getcolumns);
             while(conn.rs.next()){
                 JSONObject obj = new JSONObject();
-                obj.put("sub_county", conn.rs.getString(1));
+                obj.put("column_name", conn.rs.getString(1));
+                obj.put("label", conn.rs.getString(2));
+                
                 jarray.add(obj);
+                
             }
             
             finalobj.put("data", jarray);
@@ -88,11 +63,11 @@ String where_clause;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    try {
-        processRequest(request, response);
-    } catch (SQLException ex) {
-        Logger.getLogger(load_subcounty.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(load_elements.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -106,11 +81,11 @@ String where_clause;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    try {
-        processRequest(request, response);
-    } catch (SQLException ex) {
-        Logger.getLogger(load_subcounty.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(load_elements.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

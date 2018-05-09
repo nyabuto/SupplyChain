@@ -41,18 +41,83 @@ public class raw_report extends HttpServlet {
 HttpSession session;
 String query;
 int row_counter;
+String where_clause,columns;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         
             session = request.getSession();
             dbConn conn = new dbConn();
           Manager manager = new Manager();
-            
+           
+          String[] counties = request.getParameterValues("county");
+          String[] sub_counties = request.getParameterValues("sub_county");
+          String[] facilities = request.getParameterValues("mfl_code");
+          
+          String[] elements = request.getParameterValues("elements");
+          
+          columns="";
+          
+         where_clause = "WHERE 1=1 AND"; 
+          if(facilities!=null){
+          for(String mfl_code:facilities){
+              if(!mfl_code.equals("") && !mfl_code.equals(",")){
+              mfl_code = mfl_code.replace("'", "\'");
+              where_clause+=" mfl_code='"+mfl_code+"' OR ";
+              }
+          }
+          }
+          
+          else if(sub_counties!=null){
+          for(String sub_county:sub_counties){
+              if(!sub_county.equals("") && !sub_county.equals(",")){
+              sub_county = sub_county.replace("'", "\'");
+              where_clause+=" sub_county='"+sub_county+"' OR ";
+              }
+          }
+          }
+          
+          else if(counties!=null){
+          for(String county:counties){
+              if(!county.equals("") && !county.equals(",")){
+              county = county.replace("'", "\'");
+              where_clause+=" county='"+county+"' OR ";
+              }
+          }
+          }
+          
+          if(elements!=null){
+          for(String column_name:elements){
+              if(!column_name.equals("") && !column_name.equals(",")){
+              column_name = column_name.replace("'", "\'");
+              String label = getcolum_label(conn,column_name);
+               label = label.replace("'", "\\'");
+              columns+="IFNULL("+column_name+",'') AS '"+label+"', ";
+              }
+          }
+          }
+          else{
+           String getlabel  = "SELECT column_name,label FROM column_mapping WHERE is_active=1 ORDER BY id";
+       conn.rs = conn.st.executeQuery(getlabel);
+       while(conn.rs.next()){
+           String column_name = conn.rs.getString(1);
+           String label = conn.rs.getString(2);
+           
+           column_name = column_name.replace("'", "\'");
+           label = label.replace("'", "\\'");
+           columns+="IFNULL("+column_name+",'') AS '"+label+"', ";
+       }   
+          }
+          
+          
+         columns = Manager.removeLastChars(columns, 2); 
+          
+          //remove last 4 characters
+          where_clause = Manager.removeLastChars(where_clause, 3);
             row_counter=0;
       
         //            ^^^^^^^^^^^^^CREATE STATIC AND WRITE STATIC DATA TO THE EXCELL^^^^^^^^^^^^
     XSSFWorkbook wb=new XSSFWorkbook();
-    XSSFSheet shet1=wb.createSheet("Rebanking Report");
+    XSSFSheet shet1=wb.createSheet("Baseline Assessment Data");
     XSSFFont font=wb.createFont();
     font.setFontHeightInPoints((short)18);
     font.setFontName("Cambria");
@@ -63,7 +128,7 @@ int row_counter;
     style.setAlignment(HorizontalAlignment.CENTER);
     
     XSSFCellStyle styleHeader = wb.createCellStyle();
-    styleHeader.setFillForegroundColor(HSSFColor.GREY_40_PERCENT.index);
+    styleHeader.setFillForegroundColor(HSSFColor.PALE_BLUE.index);
     styleHeader.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     styleHeader.setBorderTop(BorderStyle.THIN);
     styleHeader.setBorderBottom(BorderStyle.THIN);
@@ -76,7 +141,7 @@ int row_counter;
     fontHeader.setBold(true);
     fontHeader.setFamily(FontFamily.MODERN);
     fontHeader.setFontName("Cambria");
-    fontHeader.setFontHeight(15);
+    fontHeader.setFontHeight(12);
     styleHeader.setFont(fontHeader);
     styleHeader.setWrapText(true);
     
@@ -143,60 +208,9 @@ int row_counter;
             
             
             
-        query = " SELECT IFNULL(county,'') AS 'County', IFNULL(sub_county,'') AS 'Sub County',IFNULL(facility,'') AS'Health Facility', "
-            + "IFNULL(facility_level,'') AS 'Facility Level',  IFNULL(mfl_code,'') AS 'MFL Code', IFNULL(ownership,'') AS 'Ownership', "
-            + "IFNULL(facility_incharge,'') AS 'Facility in Charge', IFNULL(incharge_contact,'') AS 'Facility in Charge Phone', "
-            + "IFNULL(pharmacy_person,'') AS 'Pharmacy Contact Person', IFNULL(pharmacy_phone,'') AS 'Pharmacy contact person\\'s Phone', "
-            + "IFNULL(lab_person,'') AS 'Laboratory Contact Person', IFNULL(lab_phone,'') AS 'Laboratory contact Person\\'s Phone', "
-            + "IFNULL(visit_date,'') AS 'Date of Visit', IFNULL(has_lab,'') AS 'Does the facility have a laboratory?', "
-            + "IFNULL(has_designated_store,'') AS 'Does the facility have a designated store for health commodities?', "
-            + "IFNULL(CM_pharmaceutical,'') AS 'Who manages Pharmaceuticals and related supplies?', "
-            + "IFNULL(CM_non_pharmaceutical,'') AS 'Who manages Non-pharmaceuticals (medical supplies)?', "
-            + "IFNULL(CM_lab,'') AS 'Who manages Lab reagents and test kits?', "
-            + "IFNULL(supervision_CM,'') AS 'Has the facility received supportive supervision related to commodity management in the last 3 months?', "
-            + "IFNULL(who_supervision_CM,'') AS 'If yes above who provided this supportive supervision?', "
-            + "IFNULL(power_source,'') AS 'What power source does the facility use (Electricity, Solar, etc.)?', "
-            + "IFNULL(power_reliable,'') AS 'Is the power supply reliable (not more than one outage of >5 minutes per day)?', "
-            + "IFNULL(commodity_challenges,'') AS 'What are the main commodity related challenges that the facility experiences?', "
-            + "IFNULL(storage_pharm_num,'') AS 'Pharmacy storage area numerator', IFNULL(storage_pharm_den,'') AS 'Pharmacy storage area denominator', "
-            + "IFNULL(storage_pharm_score,'') AS 'Pharmacy storage area score', IFNULL(storage_lab_num,'') AS 'Laboratory starage area numerator', "
-            + "IFNULL(storage_lab_den,'') AS 'Laboratory storage area denominator', IFNULL(storage_lab_score,'') AS 'Laboratory storage area score', "
-            + "IFNULL(storage_total_num,'') AS 'Storage areas numerator', IFNULL(storage_total_den,'') AS 'Storage areas denominator', "
-            + "IFNULL(storage_total_score,'') AS 'Storage areas Score', IFNULL(inventory_pharm_num,'') AS 'Pharmacy inventory management numerator', "
-            + "IFNULL(inventory_pharm_den,'') AS 'Pharmacy inventory management denominator', IFNULL(inventory_pharm_score,'') AS 'Pharmacy inventory management score', "
-            + "IFNULL(inventory_lab_num,'') AS 'Laboratory inventory management numerator', IFNULL(inventory_lab_den,'') AS 'Laboratory inventory management denominator', "
-            + "IFNULL(inventory_lab_score,'') AS 'Laboratory inventory management score', IFNULL(inventory_total_num,'') AS 'Inventory management numerator', "
-            + "IFNULL(inventory_total_den,'') AS 'Inventory management denominator', IFNULL(inventory_total_score,'') AS 'Inventory management score', "
-            + "IFNULL(RRM_pharm_num,'') AS 'Pharmacy resources & reference materials numerator', "
-            + "IFNULL(RRM_pharm_den,'') AS 'Pharmacy resources & reference materials denominator', IFNULL(RRM_pharm_score,'') AS 'Pharmacy resources & reference materials score', "
-            + "IFNULL(RRM_lab_num,'') AS 'Laboratory resources & reference materials numerator', IFNULL(RRM_lab_den,'') AS 'Laboratory resources & reference materials denominator', "
-            + "IFNULL(RRM_lab_score,'') AS 'Laboratory resources & reference materials score', IFNULL(RRM_total_num,'') AS 'Resources & reference materials numerator',"
-            + " IFNULL(RRM_total_den,'') AS 'Resources & reference materials denominator', IFNULL(RRM_total_score,'') AS 'Resources & reference materials score', "
-            + "IFNULL(MIS_pharm_num,'') AS 'Availability & Use of MIS Tools in pharmacy numerator', "
-            + "IFNULL(MIS_pharm_den,'') AS 'Availability & Use of MIS Tools in pharmacy denominator', "
-            + "IFNULL(MIS_pharm_score,'') AS 'Availability & Use of MIS Tools in pharmacy score', IFNULL(MIS_lab_num,'') AS 'Availability & Use of MIS Tools in laboratory numerator', "
-            + "IFNULL(MIS_lab_den,'') AS 'Availability & Use of MIS Tools in laboratory denominator', IFNULL(MIS_lab_score,'') AS 'Availability & Use of MIS Tools in laboratory score', "
-            + "IFNULL(MIS_total_num,'') AS 'Availability & Use of MIS Tools numerator', IFNULL(MIS_total_den,'') AS 'Availability & Use of MIS Tools denominator', "
-            + "IFNULL(MIS_total_score,'') AS 'Availability & Use of MIS Tools score', IFNULL(total_pharm_num,'') AS 'Pharmacy total numerator', "
-            + "IFNULL(total_pharm_den,'') AS 'Pharmacy total denominator', IFNULL(total_pharm_score,'') AS 'Pharmacy total score', "
-            + "IFNULL(total_lab_num,'') AS 'Laboratory total numerator', IFNULL(total_lab_den,'') AS 'Laboratory total denominator', "
-            + "IFNULL(total_lab_score,'') AS 'Laboratory total score', IFNULL(total_num,'') AS 'Total Numerator', IFNULL(total_den,'') AS 'Total denominator', "
-            + "IFNULL(total_score,'') AS 'Total score', IFNULL(EUV_pharm_num,'') AS 'Pharmacy HIV RTKs End Use Verification numerator', "
-            + "IFNULL(EUV_pharm_den,'') AS 'Pharmacy HIV RTKs End Use Verification denominator', IFNULL(EUV_pharm_score,'') AS 'Pharmacy HIV RTKs End Use Verification score ', "
-            + "IFNULL(EUV_lab_num,'') AS 'Laboratory HIV RTKs End Use Verification numerator', IFNULL(EUV_lab_den,'') AS 'Laboratory HIV RTKs End Use Verification denominator', "
-            + "IFNULL(EUV_lab_score,'') AS 'Laboratory HIV RTKs End Use Verification score ', "
-            + "IFNULL(IM_additional_pharm_num,'') AS 'Pharmacy Inventory Management: additional commodities numerator', "
-            + "IFNULL(IM_additional_pharm_den,'') AS 'Pharmacy Inventory Management: additional commodities denominator', "
-            + "IFNULL(IM_additional_pharm_score,'') AS 'Pharmacy Inventory Management: additional commodities score', "
-            + "IFNULL(IM_additional_lab_num,'') AS 'Laboratory Inventory Management: additional commodities numerator', "
-            + "IFNULL(IM_additional_lab_den,'') AS 'Laboratory Inventory Management: additional commodities denominator', "
-            + "IFNULL(IM_additional_lab_score,'') AS 'Laboratory Inventory Management: additional commodities score', "
-            + "IFNULL(MTC_pharm_num,'') AS 'Pharmacy Medicines and Therapeutics Committees numerator', "
-            + "IFNULL(MTC_pharm_den,'') AS 'Pharmacy Medicines and Therapeutics Committees denominator', "
-            + "IFNULL(MTC_pharm_score,'') AS 'Pharmacy Medicines and Therapeutics Committees Score', "
-            + "IFNULL(MTC_lab_num,'') AS 'Laboratory Medicines and Therapeutics Committees numerator', "
-            + "IFNULL(MTC_lab_den,'') AS 'Laboratory Medicines and Therapeutics Committees denominator ', "
-            + "IFNULL(MTC_lab_score,'') AS 'Laboratory Medicines and Therapeutics Committees score' FROM report ";
+        query = " SELECT "
+                +columns+
+                " FROM report  "+where_clause+"";
         
         conn.pst = conn.conn.prepareStatement(query);
         conn.rs = conn.pst.executeQuery();
@@ -207,11 +221,12 @@ int row_counter;
         int count = metaData.getColumnCount(); //number of column
         
         XSSFRow rw0=shet1.createRow(row_counter); 
-        
+        rw0.setHeightInPoints(35);
         int j=1;
            while(j<=count){
                XSSFCell  S1cell=rw0.createCell(j-1);
                S1cell.setCellValue(metaData.getColumnLabel(j));
+               S1cell.setCellStyle(styleHeader);
 //                   System.out.println("columns : "+metaData.getColumnLabel(j));   
                j++;
            }
@@ -235,6 +250,7 @@ int row_counter;
             else{
                 cell.setCellValue(value);
             }
+               cell.setCellStyle(stborder);
 //               System.out.println(metaData.getColumnLabel(i)+"Value : "+conn.rs.getString(i));                 
                i++;
            }
@@ -246,7 +262,7 @@ int row_counter;
         response.setContentType("application/ms-excel");
         response.setContentLength(outArray.length);
         response.setHeader("Expires:", "0"); // eliminates browser caching
-        response.setHeader("Content-Disposition", "attachment; filename=Rebanking_Report_"+manager.getdatekey()+".xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=SupplyChain_Checklist_Raw_Data_"+manager.getdatekey()+".xlsx");
         OutputStream outStream = response.getOutputStream();
         outStream.write(outArray);
         outStream.flush();          
@@ -302,5 +318,15 @@ int row_counter;
     public boolean isNumeric(String s) {  
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");  
 }
-    
+  
+    public String getcolum_label(dbConn conn, String column_name) throws SQLException{
+       String label = "";
+       String getlabel  = "SELECT label FROM column_mapping WHERE column_name='"+column_name+"'";
+       conn.rs = conn.st.executeQuery(getlabel);
+       if(conn.rs.next()){
+           label = conn.rs.getString(1);
+       }
+       
+       return label;
+    }
 }

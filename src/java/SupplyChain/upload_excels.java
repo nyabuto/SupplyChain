@@ -9,7 +9,6 @@ import Db.dbConn;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +21,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -38,11 +39,14 @@ public class upload_excels extends HttpServlet {
   String query="",value,checker_query;
   String id,facility,facility_level,county,sub_county,mfl_code,level,ownership,facility_incharge,incharge_contact,pharmacy_person,pharmacy_phone,lab_person,lab_phone,visit_date,has_lab,has_designated_store,CM_pharmaceutical,CM_non_pharmaceutical,CM_lab,supervision_CM,who_supervision_CM,power_source,power_reliable,commodity_challenges,storage_pharm_num,storage_pharm_den,storage_pharm_score,storage_lab_num,storage_lab_den,storage_lab_score,storage_total_num,storage_total_den,storage_total_score,inventory_pharm_num,inventory_pharm_den,inventory_pharm_score,inventory_lab_num,inventory_lab_den,inventory_lab_score,inventory_total_num,inventory_total_den,inventory_total_score,RRM_pharm_num,RRM_pharm_den,RRM_pharm_score,RRM_lab_num,RRM_lab_den,RRM_lab_score,RRM_total_num,RRM_total_den,RRM_total_score,MIS_pharm_num,MIS_pharm_den,MIS_pharm_score,MIS_lab_num,MIS_lab_den,MIS_lab_score,MIS_total_num,MIS_total_den,MIS_total_score,total_pharm_num,total_pharm_den,total_pharm_score,total_lab_num,total_lab_den,total_lab_score,total_num,total_den,total_score,EUV_pharm_num,EUV_pharm_den,EUV_pharm_score,EUV_lab_num,EUV_lab_den,EUV_lab_score,IM_additional_pharm_num,IM_additional_pharm_den,IM_additional_pharm_score,IM_additional_lab_num,IM_additional_lab_den,IM_additional_lab_score,MTC_pharm_num,MTC_pharm_den,MTC_pharm_score,MTC_lab_num,MTC_lab_den,MTC_lab_score,is_locked,timestamp;
 int number_changes,added;
+String failed_description;
+int failed;
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
             dbConn  conn = new dbConn();
             session = request.getSession();
-            
+            JSONObject finalobj = new JSONObject();
+            JSONArray jarray = new JSONArray();
             number_changes=added=0;
         
         String applicationPath = request.getServletContext().getRealPath("");
@@ -54,6 +58,7 @@ int number_changes,added;
         }
         
         for (Part part : request.getParts()) {
+            
             if(!getFileName(part).equals("")){
            fileName = getFileName(part);
             part.write(uploadFilePath + File.separator + fileName);
@@ -71,8 +76,9 @@ int number_changes,added;
         workSheetGeneral = workbook.getSheet("General");
         worksheetSummary = workbook.getSheet("Summary Scores");
 //        worksheetSummary = workbook.getSheetAt(6);
-                System.out.println("Sheet : "+workSheetGeneral.getSheetName());
                 
+        failed=0;
+        failed_description="";
                 
 //****************************FACILITY INFORMATION****************************************
 //                facility
@@ -217,23 +223,8 @@ int number_changes,added;
 //        end facility_incharge
 
 //                 incharge_contact
-                if(null==workSheetGeneral.getRow(5).getCell(12).getCellTypeEnum()){
                     incharge_contact = workSheetGeneral.getRow(5).getCell(12).getRawValue();
-                }
-                else switch (workSheetGeneral.getRow(5).getCell(12).getCellTypeEnum()) {
-                    case NUMERIC:
-                        incharge_contact = ""+workSheetGeneral.getRow(5).getCell(12).getNumericCellValue();
-                        break;
-                    case STRING:
-                        incharge_contact = workSheetGeneral.getRow(5).getCell(12).getStringCellValue();
-                        break;
-                    case FORMULA:
-                        incharge_contact = ""+workSheetGeneral.getRow(5).getCell(12).getNumericCellValue();
-                        break;
-                    default:
-                        incharge_contact = workSheetGeneral.getRow(5).getCell(12).getRawValue();
-                        break;
-                }
+                
 //        end incharge_contact
 
 
@@ -258,23 +249,8 @@ int number_changes,added;
 //        end pharmacy_person
 
 //                 pharmacy_phone
-                if(null==workSheetGeneral.getRow(6).getCell(12).getCellTypeEnum()){
                     pharmacy_phone = workSheetGeneral.getRow(6).getCell(12).getRawValue();
-                }
-                else switch (workSheetGeneral.getRow(6).getCell(12).getCellTypeEnum()) {
-                    case NUMERIC:
-                        pharmacy_phone = ""+workSheetGeneral.getRow(6).getCell(12).getNumericCellValue();
-                        break;
-                    case STRING:
-                        pharmacy_phone = workSheetGeneral.getRow(6).getCell(12).getStringCellValue();
-                        break;
-                    case FORMULA:
-                        pharmacy_phone = ""+workSheetGeneral.getRow(6).getCell(12).getNumericCellValue();
-                        break;
-                    default:
-                        pharmacy_phone = workSheetGeneral.getRow(6).getCell(12).getRawValue();
-                        break;
-                }
+                
 //        end pharmacy_phone
 
 
@@ -299,23 +275,8 @@ int number_changes,added;
 //        end lab_person
 
 //                 lab_phone
-                if(null==workSheetGeneral.getRow(7).getCell(12).getCellTypeEnum()){
                     lab_phone = workSheetGeneral.getRow(7).getCell(12).getRawValue();
-                }
-                else switch (workSheetGeneral.getRow(7).getCell(12).getCellTypeEnum()) {
-                    case NUMERIC:
-                        lab_phone = ""+workSheetGeneral.getRow(7).getCell(12).getNumericCellValue();
-                        break;
-                    case STRING:
-                        lab_phone = workSheetGeneral.getRow(7).getCell(12).getStringCellValue();
-                        break;
-                    case FORMULA:
-                        lab_phone = ""+workSheetGeneral.getRow(7).getCell(12).getNumericCellValue();
-                        break;
-                    default:
-                        lab_phone = workSheetGeneral.getRow(7).getCell(12).getRawValue();
-                        break;
-                }
+
 //        end lab_phone
             
 
@@ -361,6 +322,12 @@ int number_changes,added;
                         has_lab = workSheetGeneral.getRow(13).getCell(12).getRawValue();
                         break;
                 }
+                if(has_lab!=null && has_lab.equalsIgnoreCase("Yes")){
+                    has_lab="1";
+                }
+                else{
+                   has_lab="0";  
+                }
 //        end Does the facility have a laboratory?										
 
 
@@ -381,6 +348,12 @@ int number_changes,added;
                     default:
                         has_designated_store = workSheetGeneral.getRow(14).getCell(12).getRawValue();
                         break;
+                }
+                if(has_designated_store!=null && has_designated_store.equalsIgnoreCase("Yes")){
+                    has_designated_store="1";
+                }
+                else{
+                   has_designated_store="0";  
                 }
 //        end Does the facility have a designated store for health commodities?																				
 
@@ -462,6 +435,12 @@ int number_changes,added;
                         supervision_CM = workSheetGeneral.getRow(19).getCell(12).getRawValue();
                         break;
                 }
+                if(supervision_CM!=null && supervision_CM.equalsIgnoreCase("Yes")){
+                    supervision_CM="1";
+                }
+                else{
+                   supervision_CM="0";  
+                }
 //        end  Has the facility received supportive supervision related to commodity management in the last 3 months?																			
 
 //                 If yes above who provided this supportive supervision?																			
@@ -521,6 +500,12 @@ int number_changes,added;
                     default:
                         power_reliable = workSheetGeneral.getRow(22).getCell(12).getRawValue();
                         break;
+                }
+                 if(power_reliable!=null && power_reliable.equalsIgnoreCase("Yes")){
+                    power_reliable="1";
+                }
+                else{
+                   power_reliable="0";  
                 }
 //        end  Is the power supply reliable (not more than one outage of >5 minutes per day)?																			
 
@@ -1649,10 +1634,23 @@ int number_changes,added;
                 
 //       END OF READING VALUES
 
-mfl_code = mfl_code.replace(".0", "");
 if(mfl_code!=null && visit_date!=null){
 if(!mfl_code.equals("") && !visit_date.equals("")){
 //checker 
+mfl_code = mfl_code.replace(".0", "");
+//GET CORRECT COUNTY, SUBCOUNTY DATA FOR THIS FACILITY
+String getFacilDetails="SELECT County, DistrictNom,SubPartnerNom " +
+"FROM  subpartnera join district on subpartnera.DistrictID=district.DistrictID " +
+"join county on county.CountyID=district.CountyID " +
+"where subpartnera.CentreSanteId=?";
+conn.pst2 = conn.conn.prepareStatement(getFacilDetails);
+conn.pst2.setString(1, mfl_code);
+conn.rs2 = conn.pst2.executeQuery();
+if(conn.rs2.next()){
+  county = conn.rs2.getString(1);
+  sub_county = conn.rs2.getString(2);
+  facility = conn.rs2.getString(3);
+          
 String checker = "SELECT id FROM report WHERE mfl_code=? AND visit_date=?";
 conn.pst = conn.conn.prepareStatement(checker);
 conn.pst.setString(1, mfl_code);
@@ -1769,18 +1767,34 @@ int num = conn.pst1.executeUpdate();
   }
 }
 else{
-   System.out.println("No MFL and Visit Date. EMPTY"); 
+    failed_description="No such MFL Code in our Internal System\\'s Master Facility List";
+    failed++;
 }
 }
 else{
-    System.out.println("No MFL and Visit Date NULL");
+   failed_description="Mising MFL Code and/or Date of Visit. They are Blank";
+   failed++;
+}
+}
+else{
+    failed_description="Mising MFL Code and/or Date of Visit. They are NULL";
+    failed++;
 }
 //***************************************************************************
-       System.out.println("county value : "+county);
-         
+    }
+            if(failed>0){
+                JSONObject obj = new JSONObject();
+                obj.put("file_name", fileName);
+                obj.put("description", failed_description);
+                jarray.add(obj);
             }
         }
         
+        finalobj.put("data",jarray);
+        finalobj.put("uploaded",added);
+        finalobj.put("no_changes",number_changes);
+        System.out.println("errors : "+finalobj);
+        session.setAttribute("upload_errors", finalobj);
         
         response.sendRedirect("upload_data.jsp");
     }

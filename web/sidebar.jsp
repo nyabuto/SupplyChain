@@ -68,14 +68,18 @@
                     <li class="menu-item-has-children active dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th"></i>Management</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-th"></i><a href="users.jsp">Manage Users</a></li>
+                            <li><i class="menu-icon fa fa-th"></i><a href="#">Manage Users</a></li>
                             <li><i class="menu-icon fa fa-th"></i><a href="#">Manage Uploads</a></li>
                         </ul>
                     </li>
 
 
                     <li class="">
-                        <a href="user_profile.jsp"  aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>User Profile</a>
+                        <a href="user_profile.jsp"  aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-user-circle"></i>User Profile</a>
+                       
+                    </li>
+                    <li class="active">
+                        <a href="logout"  aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-lock"></i>Logout</a>
                        
                     </li>
                     <li>

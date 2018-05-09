@@ -38,18 +38,15 @@
 </style>
 </head>
 <body class="bg-light">
-
-    <div class="sufee-login d-flex align-content-center flex-wrap">
+    
+    <div class="sufee-login d-flex align-content-center flex-wrap" style="margin-top: 7%;">
         <div class="container">
-            <div class="login-content" style="margin-top: 15%;">
-<!--                <div class="login-logo">
-                    
-                </div>-->
+            <div class="form-group login-logo">Supply Chain Facility Supervision Checklist</div>
+            <div class="login-content" style="margin-top: 3%;">
+                 
                 <div class="login-form" style="margin-top: 10%;">
                     <form action="login" method="post">
-                        <div class="form-group login-logo">
-                       Supply Chain Facility Supervision Checklist
-                        </div>
+                       
                         <div class="form-group">
                             <label>Username</label>
                             <input type="text" name="email" id="email" class="form-control" placeholder="Email">

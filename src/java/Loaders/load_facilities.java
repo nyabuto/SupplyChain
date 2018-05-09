@@ -6,6 +6,7 @@
 package Loaders;
 
 import Db.dbConn;
+import SupplyChain.Manager;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -25,8 +26,9 @@ import org.json.simple.JSONObject;
  */
 public class load_facilities extends HttpServlet {
     HttpSession session;
-    String county,sub_county,facility,mfl_code;
+    String facility,mfl_code;
     String query;
+    String where_clause;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         response.setContentType("Content-type: application/json");
@@ -34,28 +36,41 @@ public class load_facilities extends HttpServlet {
            session = request.getSession();
            dbConn conn = new dbConn();
            
+           
             JSONObject finalobj = new JSONObject();
             JSONArray jarray = new JSONArray();
+            
+         where_clause = "WHERE 1=1 AND"; 
+           
+          if(request.getParameter("sub_county")!=null && !request.getParameter("sub_county").equals("")){
+           String[] sub_counties = request.getParameter("sub_county").split(",");
+          for(String sub_county:sub_counties){
+              if(!sub_county.equals("") && !sub_county.equals(",")){
+              sub_county = sub_county.replace("'", "\'");
+              where_clause+=" sub_county='"+sub_county+"' OR ";
+              }
+          }
+          }
+          
+          else if(request.getParameter("county")!=null && !request.getParameter("county").equals("")){
+           String[] counties = request.getParameter("county").split(",");   
+          for(String county:counties){
+              if(!county.equals("") && !county.equals(",")){
+              county = county.replace("'", "\'");
+              where_clause+=" county='"+county+"' OR ";
+              }
+          }
+          }
+          
+          //remove last 4 characters
+          where_clause = Manager.removeLastChars(where_clause, 3);
+             
             query = "";
-            if(request.getParameter("sub_county")!=null && !request.getParameter("sub_county").equals("")){
-              sub_county = request.getParameter("sub_county");
-              query = "SELECT DISTINCT(mfl_code) AS mfl_code,facility AS health_facility FROM report WHERE sub_county =? ORDER BY health_facility";
-              conn.pst = conn.conn.prepareStatement(query);
-              conn.pst.setString(1, sub_county);
-              conn.rs = conn.pst.executeQuery();
-            }
-            else if(request.getParameter("county")!=null && !request.getParameter("county").equals("")){
-              county = request.getParameter("county");
-              query = "SELECT DISTINCT(mfl_code) AS mfl_code,facility AS health_facility FROM report WHERE county =? ORDER BY health_facility";
-              conn.pst = conn.conn.prepareStatement(query);
-              conn.pst.setString(1, county);
-              conn.rs = conn.pst.executeQuery();
-            }
-            else{
-              query = "SELECT DISTINCT(mfl_code) AS mfl_code,facility AS health_facility FROM report ORDER BY health_facility";
+            
+              query = "SELECT DISTINCT(mfl_code) AS mfl_code,facility AS health_facility FROM report "+where_clause+" ORDER BY health_facility";
               conn.pst = conn.conn.prepareStatement(query);
               conn.rs = conn.pst.executeQuery();  
-            }
+            
             System.out.println("query facility : "+conn.pst);
             while(conn.rs.next()){
                 JSONObject obj = new JSONObject();

@@ -34,4 +34,8 @@ int date=cal.get(Calendar.DATE);
        return year+"-0"+month+"-"+date;     
         }
     }
+    
+ public static String removeLastChars(String str, int num) {
+    return str.substring(0, str.length() - num);
+}
 }
