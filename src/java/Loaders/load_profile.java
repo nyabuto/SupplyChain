@@ -16,37 +16,51 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
  *
  * @author GNyabuto
  */
-public class load_elements extends HttpServlet {
-    HttpSession session;
+public class load_profile extends HttpServlet {
+HttpSession session;
+String user_id,message,fullname,email,phone,gender;
+int code=0;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-           session = request.getSession();
-           dbConn conn = new dbConn();
+          session = request.getSession();
+          dbConn conn = new dbConn();
+          
+          if(session.getAttribute("id")!=null){
+              user_id = session.getAttribute("id").toString();
+              
+             String getdetails = "SELECT fullname,email,phone,gender FROM user WHERE id=?";
+             conn.pst = conn.conn.prepareStatement(getdetails);
+             conn.pst.setString(1, user_id);
+              conn.rs = conn.pst.executeQuery();
+              if(conn.rs.next()){
+               fullname = conn.rs.getString("fullname");
+               phone = conn.rs.getString("phone");
+               email = conn.rs.getString("email");
+               gender = conn.rs.getString("gender");   
+              }
+              
+          }
+          else{
+      
+          }
+          
             JSONObject finalobj = new JSONObject();
-            JSONArray jarray = new JSONArray();
+            JSONObject obj = new JSONObject();
+            obj.put("fullname", fullname);
+            obj.put("phone", phone);
+            obj.put("email", email);
+            obj.put("gender", gender);
             
             
-            String getcolumns = "SELECT column_name,label FROM column_mapping WHERE is_active=1 AND is_basic=0 ORDER BY id";
-            conn.rs = conn.st.executeQuery(getcolumns);
-            while(conn.rs.next()){
-                JSONObject obj = new JSONObject();
-                obj.put("column_name", conn.rs.getString(1));
-                obj.put("label", conn.rs.getString(2));
-                
-                jarray.add(obj);
-                
-            }
-            
-            finalobj.put("data", jarray);
+            finalobj.put("data", obj);
             out.println(finalobj);
         }
     }
@@ -63,11 +77,11 @@ public class load_elements extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(load_elements.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    try {
+        processRequest(request, response);
+    } catch (SQLException ex) {
+        Logger.getLogger(load_profile.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }
 
     /**
@@ -81,11 +95,11 @@ public class load_elements extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(load_elements.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    try {
+        processRequest(request, response);
+    } catch (SQLException ex) {
+        Logger.getLogger(load_profile.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }
 
     /**

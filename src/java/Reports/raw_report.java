@@ -85,6 +85,17 @@ String where_clause,columns;
           }
           }
           
+        String getlabelbasic  = "SELECT column_name,label FROM column_mapping WHERE is_active=1 AND is_basic=1 ORDER BY id";
+       conn.rs = conn.st.executeQuery(getlabelbasic);
+       while(conn.rs.next()){
+           String column_name = conn.rs.getString(1);
+           String label = conn.rs.getString(2);
+           
+           column_name = column_name.replace("'", "\'");
+           label = label.replace("'", "\\'");
+           columns+="IFNULL("+column_name+",'') AS '"+label+"', ";
+       }
+       
           if(elements!=null){
           for(String column_name:elements){
               if(!column_name.equals("") && !column_name.equals(",")){
@@ -96,7 +107,7 @@ String where_clause,columns;
           }
           }
           else{
-           String getlabel  = "SELECT column_name,label FROM column_mapping WHERE is_active=1 ORDER BY id";
+           String getlabel  = "SELECT column_name,label FROM column_mapping WHERE is_active=1 AND is_basic=0 ORDER BY id";
        conn.rs = conn.st.executeQuery(getlabel);
        while(conn.rs.next()){
            String column_name = conn.rs.getString(1);
@@ -208,9 +219,7 @@ String where_clause,columns;
             
             
             
-        query = " SELECT "
-                +columns+
-                " FROM report  "+where_clause+"";
+        query = " SELECT "+columns+" FROM report  "+where_clause+"";
         
         conn.pst = conn.conn.prepareStatement(query);
         conn.rs = conn.pst.executeQuery();

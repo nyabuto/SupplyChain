@@ -40,6 +40,14 @@
         <servlet-name>load_elements</servlet-name>
         <servlet-class>Loaders.load_elements</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>load_profile</servlet-name>
+        <servlet-class>Loaders.load_profile</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>update_user</servlet-name>
+        <servlet-class>Loaders.update_user</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>dbsetup</servlet-name>
         <url-pattern>/dbsetup</url-pattern>
@@ -79,6 +87,14 @@
     <servlet-mapping>
         <servlet-name>load_elements</servlet-name>
         <url-pattern>/load_elements</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>load_profile</servlet-name>
+        <url-pattern>/load_profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>update_user</servlet-name>
+        <url-pattern>/update_user</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
