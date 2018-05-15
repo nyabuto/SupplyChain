@@ -48,6 +48,10 @@
         <servlet-name>update_user</servlet-name>
         <servlet-class>Loaders.update_user</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>load_dashboard</servlet-name>
+        <servlet-class>Loaders.load_dashboard</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>dbsetup</servlet-name>
         <url-pattern>/dbsetup</url-pattern>
@@ -95,6 +99,10 @@
     <servlet-mapping>
         <servlet-name>update_user</servlet-name>
         <url-pattern>/update_user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>load_dashboard</servlet-name>
+        <url-pattern>/load_dashboard</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

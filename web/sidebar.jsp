@@ -13,8 +13,8 @@
     <meta name="description" content="Sufee Admin - HTML5 Admin Template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="apple-touch-icon" href="apple-icon.png">
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="images/logo.png">
+    <link rel="shortcut icon" href="images/logo.png">
 
     <link rel="stylesheet" href="assets/css/normalize.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -52,6 +52,9 @@
                 <ul class="nav navbar-nav">
                  
                     <h3 class="menu-title" style="text-align: center; font-size: 130%;">Modules</h3><!-- /.menu-title -->
+                    <li>
+                     <a href="Dashboard.jsp"> <i class="menu-icon fa fa-dashboard"></i>Dashboard </a>
+                    </li>
                     <li class="menu-item-has-children active dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-upload"></i>Upload Data</a>
                         <ul class="sub-menu children dropdown-menu">
