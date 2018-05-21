@@ -285,11 +285,12 @@ int failed;
                     visit_date = workSheetGeneral.getRow(8).getCell(4).getRawValue();
                 }
                 else switch (workSheetGeneral.getRow(8).getCell(4).getCellTypeEnum()) {
-                    case NUMERIC:
-                        visit_date = ""+workSheetGeneral.getRow(8).getCell(4).getNumericCellValue();
-                        break;
+                    
                     case STRING:
                         visit_date = workSheetGeneral.getRow(8).getCell(4).getStringCellValue();
+                        break;
+                    case NUMERIC:
+                        visit_date = ""+workSheetGeneral.getRow(8).getCell(4).getNumericCellValue();
                         break;
                     case FORMULA:
                         visit_date = ""+workSheetGeneral.getRow(8).getCell(4).getNumericCellValue();

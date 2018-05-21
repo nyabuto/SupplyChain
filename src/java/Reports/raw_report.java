@@ -186,33 +186,6 @@ String where_clause,columns;
     font_cell.setFontName("Cambria");
     stborder.setFont(font_cell);
     stborder.setWrapText(true);
-    
-    XSSFCellStyle currencyStyle=wb.createCellStyle();
-    currencyStyle.setBorderTop(BorderStyle.THIN);
-    currencyStyle.setBorderBottom(BorderStyle.THIN);
-    currencyStyle.setBorderLeft(BorderStyle.THIN);
-    currencyStyle.setBorderRight(BorderStyle.THIN);
-    currencyStyle.setAlignment(HorizontalAlignment.LEFT);
-    
-    currencyStyle.setFont(font_cell);
-    currencyStyle.setWrapText(true);
-    
-    XSSFCellStyle totalcurrencyStyle=wb.createCellStyle();
-    totalcurrencyStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-    totalcurrencyStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    totalcurrencyStyle.setBorderTop(BorderStyle.THIN);
-    totalcurrencyStyle.setBorderBottom(BorderStyle.THIN);
-    totalcurrencyStyle.setBorderLeft(BorderStyle.THIN);
-    totalcurrencyStyle.setBorderRight(BorderStyle.THIN);
-    totalcurrencyStyle.setAlignment(HorizontalAlignment.LEFT);
-    
-    totalcurrencyStyle.setFont(fontx);
-    totalcurrencyStyle.setWrapText(true);
-    
-    
-   DataFormat df = wb.createDataFormat();
-   
-   // fetch currency
           
             
             

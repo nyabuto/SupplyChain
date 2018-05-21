@@ -63,12 +63,13 @@ String average_phamarcy,average_lab,average_score;
             
             //GET AGGREGATE SCORE
             
-            String getscore = "SELECT county AS 'County',sub_county AS 'Sub County',facility as 'Health Facility',mfl_code AS 'MFL Code'," +
-                            "ROUND(IFNULL(storage_total_score*100,0)) AS 'Storage areas score',ROUND(IFNULL(inventory_total_score*100,0)) AS 'Inventory management Score' ," +
-                            "ROUND(IFNULL(RRM_total_score*100,0)) AS 'Resources and reference materials score', ROUND(IFNULL(MIS_total_score*100,0)) AS 'Availability and use of MIS Tools Score', " +
-                            "ROUND(IFNULL(EUV_lab_score*100,0)) AS 'Laboratory HIV RTKs End Use Verification score', " +
-                            "ROUND(IFNULL(IM_additional_lab_score*100,0)) AS 'Laboratory Inventory Management: additional commodities score'," +
-                            "ROUND(IFNULL(MTC_pharm_score*100,0)) AS  'Pharmacy Medicines and Therapeutics Committees Score' FROM report";
+            String getscore = "SELECT county AS 'County'," +
+                "ROUND(AVG(IFNULL(storage_total_score*100,0))) AS 'Storage areas score',ROUND(AVG(IFNULL(inventory_total_score*100,0))) AS 'Inventory management Score' ," +
+                "ROUND(AVG(IFNULL(RRM_total_score*100,0))) AS 'Resources and reference materials score', ROUND(AVG(IFNULL(MIS_total_score*100,0))) AS 'Availability and use of MIS Tools Score', " +
+                "ROUND(AVG(IFNULL(EUV_lab_score*100,0))) AS 'Laboratory HIV RTKs End Use Verification score', " +
+                "ROUND(AVG(IFNULL(IM_additional_lab_score*100,0))) AS 'Laboratory Inventory Management: additional commodities score'," +
+                "ROUND(AVG(IFNULL(MTC_pharm_score*100,0))) AS  'Pharmacy Medicines and Therapeutics Committees Score' FROM report " +
+                "GROUP BY County";
             conn.rs = conn.st.executeQuery(getscore);
             
             ResultSetMetaData metaData = conn.rs.getMetaData();
@@ -76,14 +77,14 @@ String average_phamarcy,average_lab,average_score;
                String header = metaData.getColumnLabel(1);
                
             while(conn.rs.next()){
-            array_facilities.add(conn.rs.getString(3));
-            array_storage_score.add(conn.rs.getString(5));
-            array_inventory_score.add(conn.rs.getString(6));
-            array_RRM_score.add(conn.rs.getString(7));
-            array_MIS_score.add(conn.rs.getString(8));
-            array_EUV_lab_score.add(conn.rs.getString(9));
-            array_IM_additional_lab_score.add(conn.rs.getString(10));
-            array_MTC_pharm_score.add(conn.rs.getString(11));
+            array_facilities.add(conn.rs.getString(1));
+            array_storage_score.add(conn.rs.getString(2));
+            array_inventory_score.add(conn.rs.getString(3));
+            array_RRM_score.add(conn.rs.getString(4));
+            array_MIS_score.add(conn.rs.getString(5));
+            array_EUV_lab_score.add(conn.rs.getString(6));
+            array_IM_additional_lab_score.add(conn.rs.getString(7));
+            array_MTC_pharm_score.add(conn.rs.getString(8));
            
             }
             JSONArray all_datasets = new JSONArray();
