@@ -207,6 +207,17 @@ var opt = {
                 });
             });
         }
+    },
+    scales: {
+        yAxes: [{
+            display: true,
+            ticks: {
+                suggestedMin: 0,    
+                suggestedMax: 110,
+                stepSize: 10
+               
+            }
+        }]
     }
 };
 
