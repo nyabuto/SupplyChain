@@ -22,7 +22,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FontFamily;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -188,7 +187,13 @@ String where_clause,columns;
     stborder.setWrapText(true);
           
             
-            
+     XSSFCellStyle stborder_perc = wb.createCellStyle();
+    stborder_perc.setBorderTop(BorderStyle.THIN);
+    stborder_perc.setBorderBottom(BorderStyle.THIN);
+    stborder_perc.setBorderLeft(BorderStyle.THIN);
+    stborder_perc.setBorderRight(BorderStyle.THIN);
+    stborder_perc.setAlignment(HorizontalAlignment.LEFT);
+    stborder_perc.setDataFormat(wb.createDataFormat().getFormat("0.00%"));        
             
             
             
@@ -232,7 +237,12 @@ String where_clause,columns;
             else{
                 cell.setCellValue(value);
             }
+               if(metaData.getColumnLabel(i).contains("Score") || metaData.getColumnLabel(i).contains("score")){
+                 cell.setCellStyle(stborder_perc);   
+               }
+               else{
                cell.setCellStyle(stborder);
+               }
 //               System.out.println(metaData.getColumnLabel(i)+"Value : "+conn.rs.getString(i));                 
                i++;
            }
