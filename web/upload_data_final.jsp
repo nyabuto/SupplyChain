@@ -62,20 +62,20 @@
                         <form action="upload_excels" method="post" enctype="multipart/form-data" class="form-horizontal">
                          <div class="card-body card-block"> 
                           <div class="row form-group">
-                            <!--<div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label">Select Excel files to upload</label></div>-->
-                            <!--<div class="col-12 col-md-6"><input type="file" id="file" name="file" multiple="" class="form-control-file"></div>-->
+                            <div class="col col-md-3"><label for="file-multiple-input" class=" form-control-label">Select Excel files to upload</label></div>
+                            <div class="col-12 col-md-6"><input type="file" id="file" name="file" multiple="" class="form-control-file"></div>
                           </div>
                     
                       </div>
                         <div class="card-footer" style="text-align: right;">
                         
-<!--                        <button type="reset" class="btn btn-danger btn-sm">
+                        <button type="reset" class="btn btn-danger btn-sm">
                           <i class="fa fa-ban"></i> Cancel
-                        </button>-->
+                        </button>
                         
-                            <div type="submit" class="btn btn-danger btn-sm">
-                          <i class="fa fa-dot-circle-o"></i> You are not allowed to upload data
-                        </div>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                          <i class="fa fa-dot-circle-o"></i> Upload
+                        </button>
                       </div>
                             </form>
                     </div>

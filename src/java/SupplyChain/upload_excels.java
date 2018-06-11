@@ -1635,8 +1635,8 @@ int failed;
                 
 //       END OF READING VALUES
 
-if(mfl_code!=null && visit_date!=null){
-if(!mfl_code.equals("") && !visit_date.equals("")){
+if(mfl_code!=null){
+if(!mfl_code.equals("")){
 //checker 
 mfl_code = mfl_code.replace(".0", "");
 //GET CORRECT COUNTY, SUBCOUNTY DATA FOR THIS FACILITY
@@ -1652,10 +1652,9 @@ if(conn.rs2.next()){
   sub_county = conn.rs2.getString(2);
   facility = conn.rs2.getString(3);
           
-String checker = "SELECT id FROM report WHERE mfl_code=? AND visit_date=?";
+String checker = "SELECT id FROM report WHERE mfl_code=?";
 conn.pst = conn.conn.prepareStatement(checker);
 conn.pst.setString(1, mfl_code);
-conn.pst.setString(2, visit_date);
 conn.rs = conn.pst.executeQuery();
                 System.out.println("checker query : "+conn.pst);
 if(conn.rs.next()){
@@ -1773,12 +1772,12 @@ else{
 }
 }
 else{
-   failed_description="Mising MFL Code and/or Date of Visit. They are Blank";
+   failed_description="Mising MFL Code. It is Blank";
    failed++;
 }
 }
 else{
-    failed_description="Mising MFL Code and/or Date of Visit. They are NULL";
+    failed_description="Mising MFL Code . It is NULL";
     failed++;
 }
 //***************************************************************************
